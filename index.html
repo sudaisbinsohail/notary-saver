@@ -28,6 +28,7 @@
       --ns-muted: #6B7A8F;
       --font: 'DM Sans', sans-serif;
       --serif: 'DM Serif Display', serif;
+      --bottom-nav-h: 64px;
     }
 
     html, body {
@@ -39,560 +40,348 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    .app {
-      display: flex;
-      height: 100vh;
-      overflow: hidden;
+    /* ═══════════════════════════════
+       LAYOUT — mobile first
+    ═══════════════════════════════ */
+    .app { display: flex; min-height: 100vh; position: relative; }
+
+    /* ── SIDEBAR OVERLAY ── */
+    .sidebar-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.45); z-index: 40;
     }
+    .sidebar-overlay.open { display: block; }
 
     /* ── SIDEBAR ── */
     .sidebar {
-      width: 228px;
-      background: var(--ns-navy);
-      display: flex;
-      flex-direction: column;
-      flex-shrink: 0;
+      position: fixed; top: 0; left: 0; bottom: 0; width: 260px;
+      background: var(--ns-navy); display: flex; flex-direction: column;
+      z-index: 50; transform: translateX(-100%);
+      transition: transform 0.25s ease; overflow-y: auto;
     }
+    .sidebar.open { transform: translateX(0); }
 
     .logo {
-      padding: 26px 22px 22px;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding: 26px 22px 20px; border-bottom: 1px solid rgba(255,255,255,0.08);
+      display: flex; align-items: center; justify-content: space-between;
     }
-    .logo-mark {
-      font-family: var(--serif);
-      font-size: 20px;
-      color: #fff;
-      letter-spacing: -0.3px;
-    }
+    .logo-mark { font-family: var(--serif); font-size: 20px; color: #fff; letter-spacing: -0.3px; }
     .logo-mark span { color: var(--ns-gold); }
-    .logo-sub {
-      font-size: 10px;
-      color: rgba(255,255,255,0.3);
-      letter-spacing: 1.6px;
-      text-transform: uppercase;
-      margin-top: 3px;
+    .logo-sub { font-size: 10px; color: rgba(255,255,255,0.3); letter-spacing: 1.6px; text-transform: uppercase; margin-top: 3px; }
+    .sidebar-close {
+      background: none; border: none; cursor: pointer;
+      color: rgba(255,255,255,0.45); padding: 4px; border-radius: 6px;
+      display: flex; align-items: center; transition: color 0.1s;
     }
+    .sidebar-close:hover { color: rgba(255,255,255,0.8); }
 
-    .nav { padding: 16px 12px; flex: 1; }
-
+    .nav { padding: 14px 12px; flex: 1; }
     .nav-label {
-      font-size: 10px;
-      letter-spacing: 1.6px;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.22);
-      padding: 0 8px;
-      margin: 18px 0 6px;
+      font-size: 10px; letter-spacing: 1.6px; text-transform: uppercase;
+      color: rgba(255,255,255,0.22); padding: 0 8px; margin: 18px 0 6px;
     }
     .nav-label:first-child { margin-top: 4px; }
-
     .nav-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 9px 10px;
-      border-radius: 8px;
-      cursor: pointer;
-      color: rgba(255,255,255,0.5);
-      font-size: 13px;
-      font-weight: 400;
-      margin-bottom: 2px;
-      transition: background 0.12s, color 0.12s;
-      text-decoration: none;
-      user-select: none;
+      display: flex; align-items: center; gap: 10px; padding: 11px 10px;
+      border-radius: 8px; cursor: pointer; color: rgba(255,255,255,0.5);
+      font-size: 13px; font-weight: 400; margin-bottom: 2px;
+      transition: background 0.12s, color 0.12s; text-decoration: none; user-select: none;
     }
-    .nav-item:hover {
-      background: rgba(255,255,255,0.06);
-      color: rgba(255,255,255,0.85);
-    }
-    .nav-item.active {
-      background: rgba(196,154,46,0.14);
-      color: #F5E6B8;
-    }
+    .nav-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.85); }
+    .nav-item.active { background: rgba(196,154,46,0.14); color: #F5E6B8; }
     .nav-item svg { flex-shrink: 0; opacity: 0.85; }
-
     .nav-badge {
-      margin-left: auto;
-      background: var(--ns-gold);
-      color: var(--ns-navy);
-      font-size: 10px;
-      font-weight: 700;
-      padding: 2px 7px;
-      border-radius: 10px;
+      margin-left: auto; background: var(--ns-gold); color: var(--ns-navy);
+      font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 10px;
     }
 
-    .sidebar-footer {
-      padding: 14px 12px;
-      border-top: 1px solid rgba(255,255,255,0.08);
-    }
+    .sidebar-footer { padding: 14px 12px; border-top: 1px solid rgba(255,255,255,0.08); }
     .user-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 8px;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background 0.12s;
+      display: flex; align-items: center; gap: 10px; padding: 8px;
+      border-radius: 8px; cursor: pointer; transition: background 0.12s;
     }
     .user-row:hover { background: rgba(255,255,255,0.05); }
     .avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: rgba(196,154,46,0.2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--ns-gold);
-      flex-shrink: 0;
+      width: 34px; height: 34px; border-radius: 50%;
+      background: rgba(196,154,46,0.2); display: flex; align-items: center;
+      justify-content: center; font-size: 13px; font-weight: 600;
+      color: var(--ns-gold); flex-shrink: 0;
     }
     .user-info { flex: 1; min-width: 0; }
-    .user-name {
-      font-size: 12px;
-      color: rgba(255,255,255,0.82);
-      font-weight: 500;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
+    .user-name { font-size: 13px; color: rgba(255,255,255,0.82); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .user-plan { font-size: 10px; color: rgba(255,255,255,0.28); margin-top: 1px; }
 
     /* ── MAIN ── */
-    .main {
-      flex: 1;
-      overflow-y: auto;
-      background: var(--ns-bg);
-      display: flex;
-      flex-direction: column;
-    }
+    .main { flex: 1; width: 100%; min-height: 100vh; display: flex; flex-direction: column; padding-bottom: var(--bottom-nav-h); }
 
+    /* ── TOPBAR ── */
     .topbar {
-      background: var(--ns-surface);
-      border-bottom: 1px solid var(--ns-border);
-      padding: 0 30px;
-      height: 58px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 20;
-      flex-shrink: 0;
+      background: var(--ns-surface); border-bottom: 1px solid var(--ns-border);
+      padding: 0 16px; height: 54px; display: flex; align-items: center;
+      justify-content: space-between; position: sticky; top: 0; z-index: 20;
+      flex-shrink: 0; gap: 10px;
     }
-    .page-title {
-      font-family: var(--serif);
-      font-size: 22px;
-      color: var(--ns-navy);
+    .topbar-left { display: flex; align-items: center; gap: 12px; }
+    .hamburger {
+      background: none; border: none; cursor: pointer; color: var(--ns-navy);
+      padding: 6px; border-radius: 7px; display: flex; align-items: center;
+      transition: background 0.1s;
     }
-    .topbar-right { display: flex; align-items: center; gap: 12px; }
+    .hamburger:hover { background: rgba(13,31,60,0.06); }
+    .page-title { font-family: var(--serif); font-size: 20px; color: var(--ns-navy); }
+    .topbar-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 
     .engine-status {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      background: var(--ns-green-light);
-      border: 1px solid rgba(26,122,94,0.2);
-      border-radius: 20px;
-      padding: 5px 13px 5px 9px;
+      display: flex; align-items: center; gap: 6px; background: var(--ns-green-light);
+      border: 1px solid rgba(26,122,94,0.2); border-radius: 20px; padding: 5px 10px 5px 8px;
     }
-    .status-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--ns-green);
-      animation: pulse 2s infinite;
-      flex-shrink: 0;
-    }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ns-green); animation: pulse 2s infinite; flex-shrink: 0; }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.35} }
-    .status-text { font-size: 11px; font-weight: 500; color: var(--ns-green); white-space: nowrap; }
+    .status-text { font-size: 11px; font-weight: 500; color: var(--ns-green); white-space: nowrap; display: none; }
+    .status-short { font-size: 11px; font-weight: 500; color: var(--ns-green); }
 
     .btn-add {
-      background: var(--ns-navy);
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      padding: 9px 16px;
-      font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-      font-family: var(--font);
-      display: flex;
-      align-items: center;
-      gap: 7px;
+      background: var(--ns-navy); color: #fff; border: none; border-radius: 8px;
+      padding: 8px 10px; font-size: 13px; font-weight: 500; cursor: pointer;
+      font-family: var(--font); display: flex; align-items: center; gap: 6px;
       transition: background 0.12s;
     }
     .btn-add:hover { background: var(--ns-navy-hover); }
+    .btn-add-text { display: none; }
 
-    .content { padding: 26px 30px 40px; flex: 1; }
+    /* ── CONTENT ── */
+    .content { padding: 16px 16px 24px; flex: 1; }
 
     /* ── METRICS ── */
-    .metrics {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-      margin-bottom: 22px;
-    }
+    .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
     .metric-card {
-      background: var(--ns-surface);
-      border: 1px solid var(--ns-border);
-      border-radius: 12px;
-      padding: 22px 22px 18px;
-      position: relative;
-      overflow: hidden;
+      background: var(--ns-surface); border: 1px solid var(--ns-border);
+      border-radius: 12px; padding: 15px 14px 12px; position: relative; overflow: hidden;
     }
-    .metric-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 3px;
-    }
+    .metric-card.earned { grid-column: 1 / -1; }
+    .metric-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
     .metric-card.earned::before  { background: var(--ns-navy); }
     .metric-card.outstanding::before { background: var(--ns-amber); }
-    .metric-card.recovered::before { background: var(--ns-green); }
-
-    .metric-label {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 1.1px;
-      color: var(--ns-muted);
-      font-weight: 500;
-      margin-bottom: 9px;
-    }
-    .metric-value {
-      font-family: var(--serif);
-      font-size: 34px;
-      color: var(--ns-navy);
-      line-height: 1;
-      margin-bottom: 6px;
-    }
-    .metric-sub { font-size: 12px; color: var(--ns-muted); }
+    .metric-card.recovered::before   { background: var(--ns-green); }
+    .metric-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--ns-muted); font-weight: 500; margin-bottom: 6px; }
+    .metric-value { font-family: var(--serif); font-size: 26px; color: var(--ns-navy); line-height: 1; margin-bottom: 4px; }
+    .metric-sub { font-size: 11px; color: var(--ns-muted); }
     .metric-sub .pos { color: var(--ns-green); font-weight: 500; }
 
-    /* ── RECOVERY ENGINE PANEL ── */
-    .engine-panel {
-      background: var(--ns-surface);
-      border: 1px solid var(--ns-border);
-      border-radius: 12px;
-      padding: 22px;
-      margin-bottom: 22px;
-    }
-    .engine-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 18px;
-    }
-    .engine-title {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--ns-navy);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .engine-pill {
-      background: var(--ns-navy);
-      color: var(--ns-gold-light);
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 1px;
-      padding: 2px 8px;
-      border-radius: 4px;
-      text-transform: uppercase;
-    }
-    .last-run { font-size: 12px; color: var(--ns-muted); }
-
+    /* ── ENGINE PANEL ── */
+    .engine-panel { background: var(--ns-surface); border: 1px solid var(--ns-border); border-radius: 12px; padding: 14px; margin-bottom: 14px; }
+    .engine-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; gap: 8px; flex-wrap: wrap; }
+    .engine-title { font-size: 13px; font-weight: 600; color: var(--ns-navy); display: flex; align-items: center; gap: 8px; }
+    .engine-pill { background: var(--ns-navy); color: var(--ns-gold-light); font-size: 10px; font-weight: 700; letter-spacing: 1px; padding: 2px 8px; border-radius: 4px; text-transform: uppercase; }
+    .last-run { font-size: 11px; color: var(--ns-muted); line-height: 1.4; }
     .timeline { display: flex; }
-    .stage-block {
-      flex: 1;
-      padding: 16px 18px;
-      border: 1px solid var(--ns-border);
-      border-right: none;
-      transition: background 0.15s;
-    }
+    .stage-block { flex: 1; padding: 11px 9px; border: 1px solid var(--ns-border); border-right: none; }
     .stage-block:first-child { border-radius: 8px 0 0 8px; }
     .stage-block:last-child  { border-right: 1px solid var(--ns-border); border-radius: 0 8px 8px 0; }
-    .stage-block.active {
-      background: var(--ns-navy);
-      border-color: var(--ns-navy);
-    }
-    .stage-day {
-      font-size: 20px;
-      font-family: var(--serif);
-      color: var(--ns-navy);
-      margin-bottom: 3px;
-    }
+    .stage-block.active { background: var(--ns-navy); border-color: var(--ns-navy); }
+    .stage-day { font-size: 15px; font-family: var(--serif); color: var(--ns-navy); margin-bottom: 2px; }
     .stage-block.active .stage-day  { color: var(--ns-gold); }
-    .stage-name { font-size: 11px; color: var(--ns-muted); }
+    .stage-name { font-size: 10px; color: var(--ns-muted); }
     .stage-block.active .stage-name { color: rgba(255,255,255,0.45); }
-    .stage-count { font-size: 12px; font-weight: 600; margin-top: 8px; }
+    .stage-count { font-size: 11px; font-weight: 600; margin-top: 5px; }
     .stage-block.active .stage-count { color: #fff; }
 
     /* ── SECTION HEADER ── */
-    .section-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 14px;
-    }
+    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; gap: 8px; }
     .section-title { font-size: 14px; font-weight: 600; color: var(--ns-navy); }
-    .section-sub { font-size: 12px; color: var(--ns-muted); margin-left: 6px; font-weight: 400; }
-
-    .filter-tabs { display: flex; gap: 4px; }
+    .section-sub   { font-size: 12px; color: var(--ns-muted); margin-left: 5px; }
+    .filter-tabs   { display: flex; gap: 3px; }
     .tab {
-      padding: 5px 13px;
-      border-radius: 6px;
-      font-size: 12px;
-      cursor: pointer;
-      border: 1px solid transparent;
-      color: var(--ns-muted);
-      font-family: var(--font);
-      background: none;
-      transition: background 0.1s, color 0.1s;
+      padding: 5px 10px; border-radius: 6px; font-size: 12px; cursor: pointer;
+      border: 1px solid transparent; color: var(--ns-muted); font-family: var(--font);
+      background: none; transition: background 0.1s, color 0.1s;
     }
     .tab.active { background: var(--ns-navy); color: #fff; border-color: var(--ns-navy); }
     .tab:not(.active):hover { background: rgba(13,31,60,0.06); }
 
-    /* ── INVOICE TABLE ── */
-    .invoice-table {
-      background: var(--ns-surface);
-      border: 1px solid var(--ns-border);
-      border-radius: 12px;
-      overflow: hidden;
-      margin-bottom: 22px;
+    /* ── INVOICE CARDS (mobile default) ── */
+    .invoice-cards { margin-bottom: 14px; display: flex; flex-direction: column; gap: 9px; }
+    .invoice-card {
+      background: var(--ns-surface); border: 1px solid var(--ns-border);
+      border-radius: 12px; padding: 13px 14px; cursor: pointer; transition: background 0.1s;
     }
-    .table-head {
-      display: grid;
-      grid-template-columns: 2fr 1.1fr 0.9fr 0.9fr 1.1fr 0.8fr;
-      padding: 10px 22px;
-      background: rgba(13,31,60,0.03);
-      border-bottom: 1px solid var(--ns-border);
-    }
-    .th {
-      font-size: 10.5px;
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 0.9px;
-      color: var(--ns-muted);
-    }
+    .invoice-card:hover { background: rgba(13,31,60,0.02); }
+    .ic-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+    .ic-name { font-weight: 600; font-size: 14px; color: var(--ns-navy); }
+    .ic-sub  { font-size: 11px; color: var(--ns-muted); margin-top: 2px; }
+    .ic-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 10px; border-top: 1px solid var(--ns-border); }
+    .ic-meta { display: flex; gap: 14px; }
+    .ic-meta-label { font-size: 10px; color: var(--ns-muted); text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 2px; }
+    .ic-meta-val   { font-size: 13px; font-weight: 500; }
+    .ic-meta-val.red   { color: var(--ns-red); }
+    .ic-meta-val.amber { color: var(--ns-amber); }
+    .ic-meta-val.green { color: var(--ns-green); }
 
-    .invoice-row {
-      display: grid;
-      grid-template-columns: 2fr 1.1fr 0.9fr 0.9fr 1.1fr 0.8fr;
-      padding: 14px 22px;
-      border-bottom: 1px solid var(--ns-border);
-      align-items: center;
-      cursor: pointer;
-      transition: background 0.1s;
-    }
-    .invoice-row:last-child { border-bottom: none; }
-    .invoice-row:hover { background: rgba(13,31,60,0.025); }
-
-    .client-name { font-weight: 500; font-size: 13px; color: var(--ns-navy); }
-    .client-sub  { font-size: 11px; color: var(--ns-muted); margin-top: 2px; }
-    .td { font-size: 13px; color: var(--ns-text); }
-    .td.amount { font-weight: 500; }
-    .td.red    { color: var(--ns-red); font-weight: 600; }
-    .td.amber  { color: var(--ns-amber); font-weight: 600; }
-    .td.green  { color: var(--ns-green); font-weight: 600; }
-
-    .status-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 3px 10px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 600;
-    }
+    /* ── STATUS & STAGE ── */
+    .status-pill { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
     .status-pill.unpaid  { background: var(--ns-amber-light); color: var(--ns-amber); }
     .status-pill.paid    { background: var(--ns-green-light); color: var(--ns-green); }
     .status-pill.overdue { background: var(--ns-red-light);   color: var(--ns-red); }
-
-    .stage-indicator {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 12px;
-    }
-    .stage-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
+    .stage-indicator { display: flex; align-items: center; gap: 5px; }
+    .stage-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
     .dot-30 { background: var(--ns-amber); }
     .dot-45 { background: #E07B27; }
     .dot-60 { background: var(--ns-red); }
     .dot-none { background: #C9CDD4; }
+    .demo-badge { font-size: 9px; font-weight: 700; letter-spacing: 0.8px; background: var(--ns-gold-light); color: var(--ns-gold); padding: 2px 7px; border-radius: 4px; text-transform: uppercase; margin-left: 6px; vertical-align: middle; }
 
-    .demo-badge {
-      font-size: 9px;
-      font-weight: 700;
-      letter-spacing: 0.8px;
-      background: var(--ns-gold-light);
-      color: var(--ns-gold);
-      padding: 2px 7px;
-      border-radius: 4px;
-      text-transform: uppercase;
-      margin-left: 7px;
-      vertical-align: middle;
-    }
+    /* ── INVOICE TABLE (hidden on mobile) ── */
+    .invoice-table { display: none; background: var(--ns-surface); border: 1px solid var(--ns-border); border-radius: 12px; overflow: hidden; margin-bottom: 14px; }
+    .table-head { display: grid; grid-template-columns: 2fr 1.1fr 0.9fr 0.9fr 1.1fr 0.8fr; padding: 10px 20px; background: rgba(13,31,60,0.03); border-bottom: 1px solid var(--ns-border); }
+    .th { font-size: 10.5px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.9px; color: var(--ns-muted); }
+    .invoice-row { display: grid; grid-template-columns: 2fr 1.1fr 0.9fr 0.9fr 1.1fr 0.8fr; padding: 13px 20px; border-bottom: 1px solid var(--ns-border); align-items: center; cursor: pointer; transition: background 0.1s; }
+    .invoice-row:last-child { border-bottom: none; }
+    .invoice-row:hover { background: rgba(13,31,60,0.025); }
+    .client-name { font-weight: 500; font-size: 13px; color: var(--ns-navy); }
+    .client-sub  { font-size: 11px; color: var(--ns-muted); margin-top: 2px; }
+    .td { font-size: 13px; }
+    .td.amount { font-weight: 500; }
+    .td.red    { color: var(--ns-red);   font-weight: 600; }
+    .td.amber  { color: var(--ns-amber); font-weight: 600; }
+    .td.green  { color: var(--ns-green); font-weight: 600; }
 
     /* ── BOTTOM GRID ── */
-    .bottom-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
+    .bottom-grid { display: flex; flex-direction: column; gap: 10px; }
+    .card { background: var(--ns-surface); border: 1px solid var(--ns-border); border-radius: 12px; padding: 15px; }
 
-    .card {
-      background: var(--ns-surface);
-      border: 1px solid var(--ns-border);
-      border-radius: 12px;
-      padding: 22px;
-    }
-
-    /* Activity */
-    .activity-list { margin-top: 14px; }
-    .activity-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      padding: 11px 0;
-      border-bottom: 1px solid var(--ns-border);
-    }
+    .activity-list { margin-top: 12px; }
+    .activity-item { display: flex; align-items: flex-start; gap: 11px; padding: 10px 0; border-bottom: 1px solid var(--ns-border); }
     .activity-item:last-child { border-bottom: none; padding-bottom: 0; }
-
-    .a-icon {
-      width: 30px;
-      height: 30px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      margin-top: 1px;
-    }
+    .a-icon { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
     .a-icon.email { background: var(--ns-amber-light); }
     .a-icon.paid  { background: var(--ns-green-light); }
     .a-icon.new   { background: rgba(13,31,60,0.07); }
-
     .a-main { font-size: 12px; font-weight: 500; color: var(--ns-navy); line-height: 1.45; }
     .a-time { font-size: 11px; color: var(--ns-muted); margin-top: 2px; }
 
-    /* Quick Actions */
-    .quick-action {
-      display: flex;
-      align-items: center;
-      gap: 13px;
-      padding: 13px;
-      border: 1px solid var(--ns-border);
-      border-radius: 9px;
-      cursor: pointer;
-      margin-bottom: 9px;
-      transition: border-color 0.12s, background 0.12s;
-    }
+    .quick-action { display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid var(--ns-border); border-radius: 9px; cursor: pointer; margin-bottom: 8px; transition: border-color 0.12s, background 0.12s; }
     .quick-action:last-child { margin-bottom: 0; }
     .quick-action:hover { border-color: var(--ns-navy); background: rgba(13,31,60,0.02); }
-
-    .qa-icon {
-      width: 38px;
-      height: 38px;
-      border-radius: 9px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
+    .qa-icon { width: 36px; height: 36px; border-radius: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .qa-icon.navy  { background: rgba(13,31,60,0.08); }
     .qa-icon.gold  { background: var(--ns-gold-light); }
     .qa-icon.green { background: var(--ns-green-light); }
-
     .qa-label { font-size: 13px; font-weight: 500; color: var(--ns-navy); }
-    .qa-sub   { font-size: 11px; color: var(--ns-muted); margin-top: 2px; }
-    .qa-arrow { margin-left: auto; font-size: 18px; color: var(--ns-muted); line-height: 1; }
+    .qa-sub   { font-size: 11px; color: var(--ns-muted); margin-top: 1px; }
+    .qa-arrow { margin-left: auto; font-size: 18px; color: var(--ns-muted); }
 
-    /* scrollbar */
-    .main::-webkit-scrollbar { width: 5px; }
+    /* ── BOTTOM NAV ── */
+    .bottom-nav {
+      display: flex; position: fixed; bottom: 0; left: 0; right: 0;
+      height: var(--bottom-nav-h); background: var(--ns-navy);
+      border-top: 1px solid rgba(255,255,255,0.08); z-index: 30; padding: 0 4px;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    .bn-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer; color: rgba(255,255,255,0.38); transition: color 0.15s; text-decoration: none; border-radius: 10px; padding: 6px 4px; }
+    .bn-item.active { color: var(--ns-gold); }
+    .bn-item:hover  { color: rgba(255,255,255,0.72); }
+    .bn-label { font-size: 10px; font-weight: 500; }
+    .bn-fab { position: absolute; top: -16px; width: 48px; height: 48px; background: var(--ns-gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(196,154,46,0.45); }
+
+    .main::-webkit-scrollbar { width: 4px; }
     .main::-webkit-scrollbar-track { background: transparent; }
     .main::-webkit-scrollbar-thumb { background: rgba(13,31,60,0.12); border-radius: 4px; }
 
-    /* tab interactivity */
-    .tab-content { display: none; }
-    .tab-content.visible { display: block; }
+    /* ═══════════════════════════════
+       TABLET  ≥ 600px
+    ═══════════════════════════════ */
+    @media (min-width: 600px) {
+      .content { padding: 20px 22px 28px; }
+      .topbar  { padding: 0 22px; height: 56px; }
+      .btn-add { padding: 8px 14px; }
+      .btn-add-text { display: inline; }
+      .status-text  { display: flex; }
+      .status-short { display: none; }
+
+      .metrics { grid-template-columns: repeat(3,1fr); gap: 12px; }
+      .metric-card.earned { grid-column: auto; }
+      .metric-value { font-size: 28px; }
+
+      .invoice-cards { display: none; }
+      .invoice-table { display: block; }
+
+      .bottom-grid { flex-direction: row; gap: 12px; }
+      .bottom-grid .card { flex: 1; min-width: 0; }
+    }
+
+    /* ═══════════════════════════════
+       DESKTOP  ≥ 1024px
+    ═══════════════════════════════ */
+    @media (min-width: 1024px) {
+      .app { overflow: hidden; height: 100vh; }
+
+      .sidebar { position: relative; transform: translateX(0) !important; width: 228px; height: 100vh; overflow-y: auto; }
+      .sidebar-close   { display: none; }
+      .sidebar-overlay { display: none !important; }
+      .hamburger       { display: none; }
+
+      .main { overflow-y: auto; height: 100vh; padding-bottom: 0; }
+      .bottom-nav { display: none; }
+
+      .content  { padding: 26px 30px 40px; }
+      .topbar   { padding: 0 30px; height: 58px; }
+      .metrics  { gap: 16px; margin-bottom: 20px; }
+      .metric-value { font-size: 32px; }
+
+      .engine-panel { padding: 20px; margin-bottom: 20px; }
+      .stage-block  { padding: 15px 16px; }
+      .stage-day    { font-size: 19px; }
+
+      .invoice-table { margin-bottom: 20px; }
+      .bottom-grid   { gap: 16px; }
+    }
   </style>
 </head>
 <body>
+
+<div class="sidebar-overlay" id="overlay"></div>
+
 <div class="app">
 
   <!-- SIDEBAR -->
-  <aside class="sidebar">
+  <aside class="sidebar" id="sidebar">
     <div class="logo">
-      <div class="logo-mark">Notary<span>Saver</span></div>
-      <div class="logo-sub">Signing Agent Portal</div>
+      <div>
+        <div class="logo-mark">Notary<span>Saver</span></div>
+        <div class="logo-sub">Signing Agent Portal</div>
+      </div>
+      <button class="sidebar-close" id="sidebarClose" aria-label="Close">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M4 4l10 10M14 4L4 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
     </div>
-
     <nav class="nav">
       <div class="nav-label">Main</div>
-
-      <a class="nav-item active" href="#">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <rect x="1" y="1" width="6" height="6" rx="1.5" fill="currentColor"/>
-          <rect x="9" y="1" width="6" height="6" rx="1.5" fill="currentColor" opacity="0.6"/>
-          <rect x="1" y="9" width="6" height="6" rx="1.5" fill="currentColor" opacity="0.6"/>
-          <rect x="9" y="9" width="6" height="6" rx="1.5" fill="currentColor" opacity="0.35"/>
-        </svg>
+      <a class="nav-item active" href="#" onclick="closeNav()">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" rx="1.5" fill="currentColor"/><rect x="9" y="1" width="6" height="6" rx="1.5" fill="currentColor" opacity="0.6"/><rect x="1" y="9" width="6" height="6" rx="1.5" fill="currentColor" opacity="0.6"/><rect x="9" y="9" width="6" height="6" rx="1.5" fill="currentColor" opacity="0.35"/></svg>
         Dashboard
       </a>
-
-      <a class="nav-item" href="#">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <rect x="2" y="1" width="12" height="14" rx="2" stroke="currentColor" stroke-width="1.3"/>
-          <line x1="5" y1="5.5" x2="11" y2="5.5" stroke="currentColor" stroke-width="1"/>
-          <line x1="5" y1="8.5" x2="11" y2="8.5" stroke="currentColor" stroke-width="1"/>
-          <line x1="5" y1="11.5" x2="8.5" y2="11.5" stroke="currentColor" stroke-width="1"/>
-        </svg>
-        Jobs
-        <span class="nav-badge">12</span>
+      <a class="nav-item" href="#" onclick="closeNav()">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="1" width="12" height="14" rx="2" stroke="currentColor" stroke-width="1.3"/><line x1="5" y1="5.5" x2="11" y2="5.5" stroke="currentColor" stroke-width="1"/><line x1="5" y1="8.5" x2="11" y2="8.5" stroke="currentColor" stroke-width="1"/><line x1="5" y1="11.5" x2="8.5" y2="11.5" stroke="currentColor" stroke-width="1"/></svg>
+        Jobs <span class="nav-badge">12</span>
       </a>
-
-      <a class="nav-item" href="#">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.3"/>
-          <path d="M8 4.5V8.2L10.3 10.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-        </svg>
+      <a class="nav-item" href="#" onclick="closeNav()">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.3"/><path d="M8 4.5V8.2L10.3 10.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
         Recovery
       </a>
-
       <div class="nav-label">Account</div>
-
-      <a class="nav-item" href="#">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <path d="M2 13.5c0-2.8 2.2-4.5 6-4.5s6 1.7 6 4.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-          <circle cx="8" cy="5.5" r="3" stroke="currentColor" stroke-width="1.3"/>
-        </svg>
+      <a class="nav-item" href="#" onclick="closeNav()">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 13.5c0-2.8 2.2-4.5 6-4.5s6 1.7 6 4.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="8" cy="5.5" r="3" stroke="currentColor" stroke-width="1.3"/></svg>
         Profile
       </a>
-
-      <a class="nav-item" href="#">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <rect x="1.5" y="3.5" width="13" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/>
-          <path d="M1.5 6.5h13" stroke="currentColor" stroke-width="1.3"/>
-        </svg>
+      <a class="nav-item" href="#" onclick="closeNav()">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="3.5" width="13" height="9" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M1.5 6.5h13" stroke="currentColor" stroke-width="1.3"/></svg>
         Billing
       </a>
-
-      <a class="nav-item" href="#">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.3"/>
-          <path d="M8 5v3.5l2 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+      <a class="nav-item" href="#" onclick="closeNav()">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="8" r="2.5" stroke="currentColor" stroke-width="1.3"/></svg>
         Settings
       </a>
     </nav>
-
     <div class="sidebar-footer">
       <div class="user-row">
         <div class="avatar">JM</div>
@@ -607,25 +396,26 @@
   <!-- MAIN -->
   <main class="main">
 
-    <!-- TOPBAR -->
     <div class="topbar">
-      <div class="page-title">Dashboard</div>
+      <div class="topbar-left">
+        <button class="hamburger" id="hamburger" aria-label="Menu">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><line x1="3" y1="5" x2="17" y2="5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><line x1="3" y1="10" x2="17" y2="10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><line x1="3" y1="15" x2="17" y2="15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </button>
+        <div class="page-title">Dashboard</div>
+      </div>
       <div class="topbar-right">
         <div class="engine-status">
           <div class="status-dot"></div>
           <div class="status-text">Engine running · last run 2h ago</div>
+          <div class="status-short">Live</div>
         </div>
-        <button class="btn-add" onclick="alert('New Job flow would open here.')">
-          <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-            <line x1="6.5" y1="1" x2="6.5" y2="12" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
-            <line x1="1" y1="6.5" x2="12" y2="6.5" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
-          </svg>
-          New Job
+        <button class="btn-add" onclick="alert('New Job flow')">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><line x1="6.5" y1="1" x2="6.5" y2="12" stroke="white" stroke-width="1.6" stroke-linecap="round"/><line x1="1" y1="6.5" x2="12" y2="6.5" stroke="white" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <span class="btn-add-text">New Job</span>
         </button>
       </div>
     </div>
 
-    <!-- CONTENT -->
     <div class="content">
 
       <!-- METRICS -->
@@ -638,23 +428,20 @@
         <div class="metric-card outstanding">
           <div class="metric-label">Outstanding</div>
           <div class="metric-value">$3,250</div>
-          <div class="metric-sub"><span class="pos">7 invoices</span> awaiting payment</div>
+          <div class="metric-sub"><span class="pos">7 invoices</span> unpaid</div>
         </div>
         <div class="metric-card recovered">
           <div class="metric-label">Recovered</div>
           <div class="metric-value">$1,940</div>
-          <div class="metric-sub"><span class="pos">+$480</span> this month via reminders</div>
+          <div class="metric-sub"><span class="pos">+$480</span> this month</div>
         </div>
       </div>
 
-      <!-- RECOVERY ENGINE -->
+      <!-- ENGINE -->
       <div class="engine-panel">
         <div class="engine-header">
-          <div class="engine-title">
-            Recovery Engine
-            <span class="engine-pill">Pro</span>
-          </div>
-          <div class="last-run">Last run: Apr 21, 2026 · 6:02 AM — 3 emails sent, 0 errors</div>
+          <div class="engine-title">Recovery Engine <span class="engine-pill">Pro</span></div>
+          <div class="last-run">Last run: Apr 21 · 6:02 AM — 3 sent</div>
         </div>
         <div class="timeline">
           <div class="stage-block">
@@ -670,306 +457,144 @@
           <div class="stage-block">
             <div class="stage-day">Day 60</div>
             <div class="stage-name">Final notice</div>
-            <div class="stage-count" style="color:var(--ns-red)">1 due tomorrow</div>
+            <div class="stage-count" style="color:var(--ns-red)">1 due tmrw</div>
           </div>
         </div>
       </div>
 
-      <!-- INVOICES -->
+      <!-- SECTION HEADER -->
       <div class="section-header">
-        <div>
-          <span class="section-title">Invoices</span>
-          <span class="section-sub">12 total</span>
-        </div>
-        <div class="filter-tabs" id="filterTabs">
+        <div><span class="section-title">Invoices</span><span class="section-sub">12 total</span></div>
+        <div class="filter-tabs">
           <button class="tab active" data-filter="all">All</button>
           <button class="tab" data-filter="unpaid">Unpaid</button>
           <button class="tab" data-filter="paid">Paid</button>
         </div>
       </div>
 
+      <!-- INVOICE CARDS (mobile) -->
+      <div class="invoice-cards">
+        <div class="invoice-card" data-status="unpaid">
+          <div class="ic-top"><div><div class="ic-name">Karen Holloway</div><div class="ic-sub">Refinance · Dallas, TX</div></div><span class="status-pill overdue">Overdue</span></div>
+          <div class="ic-footer"><div class="ic-meta"><div><div class="ic-meta-label">Fee</div><div class="ic-meta-val">$150</div></div><div><div class="ic-meta-label">Balance</div><div class="ic-meta-val red">$150</div></div><div><div class="ic-meta-label">Date</div><div class="ic-meta-val">Mar 21</div></div></div><div class="stage-indicator"><span class="stage-dot dot-60"></span><span style="color:var(--ns-red);font-weight:500;font-size:12px;">Day 60</span></div></div>
+        </div>
+        <div class="invoice-card" data-status="unpaid">
+          <div class="ic-top"><div><div class="ic-name">Derek Pham</div><div class="ic-sub">Purchase · Austin, TX</div></div><span class="status-pill unpaid">Unpaid</span></div>
+          <div class="ic-footer"><div class="ic-meta"><div><div class="ic-meta-label">Fee</div><div class="ic-meta-val">$200</div></div><div><div class="ic-meta-label">Balance</div><div class="ic-meta-val amber">$200</div></div><div><div class="ic-meta-label">Date</div><div class="ic-meta-val">Mar 5</div></div></div><div class="stage-indicator"><span class="stage-dot dot-45"></span><span style="color:var(--ns-amber);font-weight:500;font-size:12px;">Day 45</span></div></div>
+        </div>
+        <div class="invoice-card" data-status="unpaid">
+          <div class="ic-top"><div><div class="ic-name">Samantha Rice</div><div class="ic-sub">HELOC · Houston, TX</div></div><span class="status-pill unpaid">Unpaid</span></div>
+          <div class="ic-footer"><div class="ic-meta"><div><div class="ic-meta-label">Fee</div><div class="ic-meta-val">$175</div></div><div><div class="ic-meta-label">Balance</div><div class="ic-meta-val amber">$175</div></div><div><div class="ic-meta-label">Date</div><div class="ic-meta-val">Feb 20</div></div></div><div class="stage-indicator"><span class="stage-dot dot-30"></span><span style="color:var(--ns-amber);font-weight:500;font-size:12px;">Day 30</span></div></div>
+        </div>
+        <div class="invoice-card" data-status="paid">
+          <div class="ic-top"><div><div class="ic-name">First National Title</div><div class="ic-sub">Batch · 3 closings</div></div><span class="status-pill paid">Paid</span></div>
+          <div class="ic-footer"><div class="ic-meta"><div><div class="ic-meta-label">Fee</div><div class="ic-meta-val">$450</div></div><div><div class="ic-meta-label">Balance</div><div class="ic-meta-val green">$0</div></div><div><div class="ic-meta-label">Date</div><div class="ic-meta-val">Apr 10</div></div></div><div class="stage-indicator"><span class="stage-dot dot-none"></span><span style="color:var(--ns-muted);font-size:12px;">—</span></div></div>
+        </div>
+        <div class="invoice-card" data-status="paid">
+          <div class="ic-top"><div><div class="ic-name">Meridian Escrow</div><div class="ic-sub">Refi · Phoenix, AZ</div></div><span class="status-pill paid">Paid</span></div>
+          <div class="ic-footer"><div class="ic-meta"><div><div class="ic-meta-label">Fee</div><div class="ic-meta-val">$225</div></div><div><div class="ic-meta-label">Balance</div><div class="ic-meta-val green">$0</div></div><div><div class="ic-meta-label">Date</div><div class="ic-meta-val">Apr 4</div></div></div><div class="stage-indicator"><span class="stage-dot dot-none"></span><span style="color:var(--ns-muted);font-size:12px;">—</span></div></div>
+        </div>
+        <div class="invoice-card" data-status="unpaid">
+          <div class="ic-top"><div><div class="ic-name">Sample Client <span class="demo-badge">Demo</span></div><div class="ic-sub">Preview · Not a real job</div></div><span class="status-pill unpaid">Unpaid</span></div>
+          <div class="ic-footer"><div class="ic-meta"><div><div class="ic-meta-label">Fee</div><div class="ic-meta-val">$125</div></div><div><div class="ic-meta-label">Balance</div><div class="ic-meta-val" style="color:var(--ns-muted)">$125</div></div><div><div class="ic-meta-label">Date</div><div class="ic-meta-val">Apr 1</div></div></div><div class="stage-indicator"><span class="stage-dot dot-none"></span><span style="color:var(--ns-muted);font-size:12px;">—</span></div></div>
+        </div>
+      </div>
+
+      <!-- INVOICE TABLE (tablet+) -->
       <div class="invoice-table">
-        <div class="table-head">
-          <div class="th">Client / Job</div>
-          <div class="th">Service Date</div>
-          <div class="th">Fee</div>
-          <div class="th">Balance</div>
-          <div class="th">Status</div>
-          <div class="th">Stage</div>
-        </div>
-
-        <!-- Row 1 -->
-        <div class="invoice-row" data-status="unpaid">
-          <div>
-            <div class="client-name">Karen Holloway</div>
-            <div class="client-sub">Refinance · Dallas, TX</div>
-          </div>
-          <div class="td">Mar 21, 2026</div>
-          <div class="td amount">$150</div>
-          <div class="td amount red">$150</div>
-          <div class="td"><span class="status-pill overdue">Overdue</span></div>
-          <div class="td">
-            <div class="stage-indicator">
-              <span class="stage-dot dot-60"></span>
-              <span style="color:var(--ns-red);font-weight:500;">Day 60</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Row 2 -->
-        <div class="invoice-row" data-status="unpaid">
-          <div>
-            <div class="client-name">Derek Pham</div>
-            <div class="client-sub">Purchase · Austin, TX</div>
-          </div>
-          <div class="td">Mar 5, 2026</div>
-          <div class="td amount">$200</div>
-          <div class="td amount amber">$200</div>
-          <div class="td"><span class="status-pill unpaid">Unpaid</span></div>
-          <div class="td">
-            <div class="stage-indicator">
-              <span class="stage-dot dot-45"></span>
-              <span style="color:var(--ns-amber);font-weight:500;">Day 45</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Row 3 -->
-        <div class="invoice-row" data-status="unpaid">
-          <div>
-            <div class="client-name">Samantha Rice</div>
-            <div class="client-sub">HELOC · Houston, TX</div>
-          </div>
-          <div class="td">Feb 20, 2026</div>
-          <div class="td amount">$175</div>
-          <div class="td amount amber">$175</div>
-          <div class="td"><span class="status-pill unpaid">Unpaid</span></div>
-          <div class="td">
-            <div class="stage-indicator">
-              <span class="stage-dot dot-30"></span>
-              <span style="color:var(--ns-amber);font-weight:500;">Day 30</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Row 4 -->
-        <div class="invoice-row" data-status="paid">
-          <div>
-            <div class="client-name">First National Title</div>
-            <div class="client-sub">Batch · 3 closings</div>
-          </div>
-          <div class="td">Apr 10, 2026</div>
-          <div class="td amount">$450</div>
-          <div class="td amount green">$0</div>
-          <div class="td"><span class="status-pill paid">Paid</span></div>
-          <div class="td">
-            <div class="stage-indicator">
-              <span class="stage-dot dot-none"></span>
-              <span style="color:var(--ns-muted);">—</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Row 5 -->
-        <div class="invoice-row" data-status="paid">
-          <div>
-            <div class="client-name">Meridian Escrow</div>
-            <div class="client-sub">Refi · Phoenix, AZ</div>
-          </div>
-          <div class="td">Apr 4, 2026</div>
-          <div class="td amount">$225</div>
-          <div class="td amount green">$0</div>
-          <div class="td"><span class="status-pill paid">Paid</span></div>
-          <div class="td">
-            <div class="stage-indicator">
-              <span class="stage-dot dot-none"></span>
-              <span style="color:var(--ns-muted);">—</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Row 6 — Demo -->
-        <div class="invoice-row" data-status="unpaid">
-          <div>
-            <div class="client-name">
-              Sample Client
-              <span class="demo-badge">Demo</span>
-            </div>
-            <div class="client-sub">Preview · Not a real job</div>
-          </div>
-          <div class="td">Apr 1, 2026</div>
-          <div class="td amount">$125</div>
-          <div class="td amount" style="color:var(--ns-muted)">$125</div>
-          <div class="td"><span class="status-pill unpaid">Unpaid</span></div>
-          <div class="td">
-            <div class="stage-indicator">
-              <span class="stage-dot dot-none"></span>
-              <span style="color:var(--ns-muted);">—</span>
-            </div>
-          </div>
-        </div>
-
-      </div><!-- /invoice-table -->
+        <div class="table-head"><div class="th">Client / Job</div><div class="th">Service Date</div><div class="th">Fee</div><div class="th">Balance</div><div class="th">Status</div><div class="th">Stage</div></div>
+        <div class="invoice-row" data-status="unpaid"><div><div class="client-name">Karen Holloway</div><div class="client-sub">Refinance · Dallas, TX</div></div><div class="td">Mar 21, 2026</div><div class="td amount">$150</div><div class="td red">$150</div><div class="td"><span class="status-pill overdue">Overdue</span></div><div class="td"><div class="stage-indicator"><span class="stage-dot dot-60"></span><span style="color:var(--ns-red);font-weight:500;font-size:12px;">Day 60</span></div></div></div>
+        <div class="invoice-row" data-status="unpaid"><div><div class="client-name">Derek Pham</div><div class="client-sub">Purchase · Austin, TX</div></div><div class="td">Mar 5, 2026</div><div class="td amount">$200</div><div class="td amber">$200</div><div class="td"><span class="status-pill unpaid">Unpaid</span></div><div class="td"><div class="stage-indicator"><span class="stage-dot dot-45"></span><span style="color:var(--ns-amber);font-weight:500;font-size:12px;">Day 45</span></div></div></div>
+        <div class="invoice-row" data-status="unpaid"><div><div class="client-name">Samantha Rice</div><div class="client-sub">HELOC · Houston, TX</div></div><div class="td">Feb 20, 2026</div><div class="td amount">$175</div><div class="td amber">$175</div><div class="td"><span class="status-pill unpaid">Unpaid</span></div><div class="td"><div class="stage-indicator"><span class="stage-dot dot-30"></span><span style="color:var(--ns-amber);font-weight:500;font-size:12px;">Day 30</span></div></div></div>
+        <div class="invoice-row" data-status="paid"><div><div class="client-name">First National Title</div><div class="client-sub">Batch · 3 closings</div></div><div class="td">Apr 10, 2026</div><div class="td amount">$450</div><div class="td green">$0</div><div class="td"><span class="status-pill paid">Paid</span></div><div class="td"><div class="stage-indicator"><span class="stage-dot dot-none"></span><span style="color:var(--ns-muted);font-size:12px;">—</span></div></div></div>
+        <div class="invoice-row" data-status="paid"><div><div class="client-name">Meridian Escrow</div><div class="client-sub">Refi · Phoenix, AZ</div></div><div class="td">Apr 4, 2026</div><div class="td amount">$225</div><div class="td green">$0</div><div class="td"><span class="status-pill paid">Paid</span></div><div class="td"><div class="stage-indicator"><span class="stage-dot dot-none"></span><span style="color:var(--ns-muted);font-size:12px;">—</span></div></div></div>
+        <div class="invoice-row" data-status="unpaid"><div><div class="client-name">Sample Client <span class="demo-badge">Demo</span></div><div class="client-sub">Preview · Not a real job</div></div><div class="td">Apr 1, 2026</div><div class="td amount">$125</div><div class="td" style="color:var(--ns-muted)">$125</div><div class="td"><span class="status-pill unpaid">Unpaid</span></div><div class="td"><div class="stage-indicator"><span class="stage-dot dot-none"></span><span style="color:var(--ns-muted);font-size:12px;">—</span></div></div></div>
+      </div>
 
       <!-- BOTTOM GRID -->
       <div class="bottom-grid">
-
-        <!-- Recent Activity -->
         <div class="card">
           <div class="section-title">Recent Activity</div>
           <div class="activity-list">
-
-            <div class="activity-item">
-              <div class="a-icon email">
-                <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
-                  <rect x="1" y="3" width="13" height="9" rx="1.5" stroke="#D4780A" stroke-width="1.2"/>
-                  <path d="M1 5l6.5 4.5L14 5" stroke="#D4780A" stroke-width="1.2"/>
-                </svg>
-              </div>
-              <div>
-                <div class="a-main">Day 45 reminder sent to Derek Pham</div>
-                <div class="a-time">Today · 6:02 AM</div>
-              </div>
-            </div>
-
-            <div class="activity-item">
-              <div class="a-icon paid">
-                <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
-                  <circle cx="7.5" cy="7.5" r="6" stroke="#1A7A5E" stroke-width="1.2"/>
-                  <path d="M4.5 7.5l2.5 2.5 4-4" stroke="#1A7A5E" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </div>
-              <div>
-                <div class="a-main">First National Title marked paid · $450</div>
-                <div class="a-time">Yesterday · 3:14 PM</div>
-              </div>
-            </div>
-
-            <div class="activity-item">
-              <div class="a-icon email">
-                <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
-                  <rect x="1" y="3" width="13" height="9" rx="1.5" stroke="#D4780A" stroke-width="1.2"/>
-                  <path d="M1 5l6.5 4.5L14 5" stroke="#D4780A" stroke-width="1.2"/>
-                </svg>
-              </div>
-              <div>
-                <div class="a-main">Day 30 reminder sent to Samantha Rice</div>
-                <div class="a-time">Apr 20 · 6:01 AM</div>
-              </div>
-            </div>
-
-            <div class="activity-item">
-              <div class="a-icon new">
-                <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
-                  <rect x="2" y="1" width="11" height="13" rx="1.5" stroke="#0D1F3C" stroke-width="1.2" opacity="0.45"/>
-                  <line x1="4.5" y1="5.5" x2="10.5" y2="5.5" stroke="#0D1F3C" stroke-width="1" opacity="0.4"/>
-                  <line x1="4.5" y1="8.5" x2="10.5" y2="8.5" stroke="#0D1F3C" stroke-width="1" opacity="0.4"/>
-                  <line x1="4.5" y1="11" x2="8" y2="11" stroke="#0D1F3C" stroke-width="1" opacity="0.4"/>
-                </svg>
-              </div>
-              <div>
-                <div class="a-main">New job created — Karen Holloway</div>
-                <div class="a-time">Mar 21 · 9:44 AM</div>
-              </div>
-            </div>
-
+            <div class="activity-item"><div class="a-icon email"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="1" y="3" width="13" height="9" rx="1.5" stroke="#D4780A" stroke-width="1.2"/><path d="M1 5l6.5 4.5L14 5" stroke="#D4780A" stroke-width="1.2"/></svg></div><div><div class="a-main">Day 45 reminder sent to Derek Pham</div><div class="a-time">Today · 6:02 AM</div></div></div>
+            <div class="activity-item"><div class="a-icon paid"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="6" stroke="#1A7A5E" stroke-width="1.2"/><path d="M4.5 7.5l2.5 2.5 4-4" stroke="#1A7A5E" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div><div class="a-main">First National Title marked paid · $450</div><div class="a-time">Yesterday · 3:14 PM</div></div></div>
+            <div class="activity-item"><div class="a-icon email"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="1" y="3" width="13" height="9" rx="1.5" stroke="#D4780A" stroke-width="1.2"/><path d="M1 5l6.5 4.5L14 5" stroke="#D4780A" stroke-width="1.2"/></svg></div><div><div class="a-main">Day 30 reminder sent to Samantha Rice</div><div class="a-time">Apr 20 · 6:01 AM</div></div></div>
+            <div class="activity-item"><div class="a-icon new"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="2" y="1" width="11" height="13" rx="1.5" stroke="#0D1F3C" stroke-width="1.2" opacity="0.45"/><line x1="4.5" y1="5.5" x2="10.5" y2="5.5" stroke="#0D1F3C" stroke-width="1" opacity="0.4"/><line x1="4.5" y1="8.5" x2="10.5" y2="8.5" stroke="#0D1F3C" stroke-width="1" opacity="0.4"/></svg></div><div><div class="a-main">New job created — Karen Holloway</div><div class="a-time">Mar 21 · 9:44 AM</div></div></div>
           </div>
-        </div><!-- /activity -->
-
-        <!-- Quick Actions -->
+        </div>
         <div class="card">
           <div class="section-title">Quick Actions</div>
-          <div style="margin-top:14px;">
-
-            <div class="quick-action" onclick="alert('New Job')">
-              <div class="qa-icon navy">
-                <svg width="17" height="17" viewBox="0 0 17 17" fill="none">
-                  <line x1="8.5" y1="2" x2="8.5" y2="15" stroke="#0D1F3C" stroke-width="1.6" stroke-linecap="round"/>
-                  <line x1="2" y1="8.5" x2="15" y2="8.5" stroke="#0D1F3C" stroke-width="1.6" stroke-linecap="round"/>
-                </svg>
-              </div>
-              <div>
-                <div class="qa-label">Add New Job</div>
-                <div class="qa-sub">Create a client &amp; invoice</div>
-              </div>
-              <div class="qa-arrow">›</div>
-            </div>
-
-            <div class="quick-action" onclick="alert('Recovery Log')">
-              <div class="qa-icon gold">
-                <svg width="17" height="17" viewBox="0 0 17 17" fill="none">
-                  <circle cx="8.5" cy="8.5" r="6.5" stroke="#C49A2E" stroke-width="1.3"/>
-                  <path d="M8.5 5V8.8L11 11" stroke="#C49A2E" stroke-width="1.3" stroke-linecap="round"/>
-                </svg>
-              </div>
-              <div>
-                <div class="qa-label">View Recovery Log</div>
-                <div class="qa-sub">Engine history &amp; sent emails</div>
-              </div>
-              <div class="qa-arrow">›</div>
-            </div>
-
-            <div class="quick-action" onclick="alert('Mark Paid')">
-              <div class="qa-icon green">
-                <svg width="17" height="17" viewBox="0 0 17 17" fill="none">
-                  <rect x="2" y="2" width="13" height="13" rx="2" stroke="#1A7A5E" stroke-width="1.3"/>
-                  <path d="M5 8.5l3 3 4.5-5" stroke="#1A7A5E" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </div>
-              <div>
-                <div class="qa-label">Mark Invoice Paid</div>
-                <div class="qa-sub">Enter payment amount</div>
-              </div>
-              <div class="qa-arrow">›</div>
-            </div>
-
-            <div class="quick-action" onclick="alert('Manage Billing via Stripe Portal')">
-              <div class="qa-icon navy">
-                <svg width="17" height="17" viewBox="0 0 17 17" fill="none">
-                  <rect x="1.5" y="4" width="14" height="9.5" rx="1.5" stroke="#0D1F3C" stroke-width="1.3" opacity="0.5"/>
-                  <path d="M1.5 7.5h14" stroke="#0D1F3C" stroke-width="1.3" opacity="0.45"/>
-                </svg>
-              </div>
-              <div>
-                <div class="qa-label">Manage Billing</div>
-                <div class="qa-sub">Stripe Customer Portal</div>
-              </div>
-              <div class="qa-arrow">›</div>
-            </div>
-
+          <div style="margin-top:12px;">
+            <div class="quick-action" onclick="alert('New Job')"><div class="qa-icon navy"><svg width="17" height="17" viewBox="0 0 17 17" fill="none"><line x1="8.5" y1="2" x2="8.5" y2="15" stroke="#0D1F3C" stroke-width="1.6" stroke-linecap="round"/><line x1="2" y1="8.5" x2="15" y2="8.5" stroke="#0D1F3C" stroke-width="1.6" stroke-linecap="round"/></svg></div><div><div class="qa-label">Add New Job</div><div class="qa-sub">Create a client &amp; invoice</div></div><div class="qa-arrow">›</div></div>
+            <div class="quick-action" onclick="alert('Recovery Log')"><div class="qa-icon gold"><svg width="17" height="17" viewBox="0 0 17 17" fill="none"><circle cx="8.5" cy="8.5" r="6.5" stroke="#C49A2E" stroke-width="1.3"/><path d="M8.5 5V8.8L11 11" stroke="#C49A2E" stroke-width="1.3" stroke-linecap="round"/></svg></div><div><div class="qa-label">View Recovery Log</div><div class="qa-sub">Engine history &amp; emails</div></div><div class="qa-arrow">›</div></div>
+            <div class="quick-action" onclick="alert('Mark Paid')"><div class="qa-icon green"><svg width="17" height="17" viewBox="0 0 17 17" fill="none"><rect x="2" y="2" width="13" height="13" rx="2" stroke="#1A7A5E" stroke-width="1.3"/><path d="M5 8.5l3 3 4.5-5" stroke="#1A7A5E" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div><div class="qa-label">Mark Invoice Paid</div><div class="qa-sub">Enter payment amount</div></div><div class="qa-arrow">›</div></div>
+            <div class="quick-action" onclick="alert('Stripe')"><div class="qa-icon navy"><svg width="17" height="17" viewBox="0 0 17 17" fill="none"><rect x="1.5" y="4" width="14" height="9.5" rx="1.5" stroke="#0D1F3C" stroke-width="1.3" opacity="0.5"/><path d="M1.5 7.5h14" stroke="#0D1F3C" stroke-width="1.3" opacity="0.45"/></svg></div><div><div class="qa-label">Manage Billing</div><div class="qa-sub">Stripe Customer Portal</div></div><div class="qa-arrow">›</div></div>
           </div>
-        </div><!-- /quick actions -->
+        </div>
+      </div>
 
-      </div><!-- /bottom-grid -->
     </div><!-- /content -->
   </main>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <a class="bn-item active" href="#">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="1" y="1" width="7.5" height="7.5" rx="2" fill="currentColor"/><rect x="11.5" y="1" width="7.5" height="7.5" rx="2" fill="currentColor" opacity="0.55"/><rect x="1" y="11.5" width="7.5" height="7.5" rx="2" fill="currentColor" opacity="0.55"/><rect x="11.5" y="11.5" width="7.5" height="7.5" rx="2" fill="currentColor" opacity="0.3"/></svg>
+      <span class="bn-label">Home</span>
+    </a>
+    <a class="bn-item" href="#">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="2" width="14" height="16" rx="2.5" stroke="currentColor" stroke-width="1.4"/><line x1="6.5" y1="7" x2="13.5" y2="7" stroke="currentColor" stroke-width="1.2"/><line x1="6.5" y1="10.5" x2="13.5" y2="10.5" stroke="currentColor" stroke-width="1.2"/><line x1="6.5" y1="14" x2="10" y2="14" stroke="currentColor" stroke-width="1.2"/></svg>
+      <span class="bn-label">Jobs</span>
+    </a>
+    <a class="bn-item" href="#" style="position:relative;">
+      <div class="bn-fab"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><line x1="9" y1="2" x2="9" y2="16" stroke="white" stroke-width="2" stroke-linecap="round"/><line x1="2" y1="9" x2="16" y2="9" stroke="white" stroke-width="2" stroke-linecap="round"/></svg></div>
+      <span class="bn-label" style="margin-top:26px;color:var(--ns-gold)">Add</span>
+    </a>
+    <a class="bn-item" href="#">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.4"/><path d="M10 5.5V10.3L12.8 13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <span class="bn-label">Recovery</span>
+    </a>
+    <a class="bn-item" href="#">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 17c0-3.3 3-5.5 7-5.5s7 2.2 7 5.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="10" cy="7" r="3.5" stroke="currentColor" stroke-width="1.4"/></svg>
+      <span class="bn-label">Profile</span>
+    </a>
+  </nav>
+
 </div>
 
 <script>
-  // Filter tabs
-  const tabs = document.querySelectorAll('.tab');
-  const rows = document.querySelectorAll('.invoice-row');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('overlay');
 
-  tabs.forEach(tab => {
+  function openNav() { sidebar.classList.add('open'); overlay.classList.add('open'); document.body.style.overflow = 'hidden'; }
+  function closeNav() { sidebar.classList.remove('open'); overlay.classList.remove('open'); document.body.style.overflow = ''; }
+
+  document.getElementById('hamburger').addEventListener('click', openNav);
+  document.getElementById('sidebarClose').addEventListener('click', closeNav);
+  overlay.addEventListener('click', closeNav);
+
+  // Filter tabs — syncs both cards and table rows
+  document.querySelectorAll('.tab').forEach(tab => {
     tab.addEventListener('click', () => {
-      tabs.forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
       tab.classList.add('active');
-      const filter = tab.dataset.filter;
-      rows.forEach(row => {
-        if (filter === 'all' || row.dataset.status === filter) {
-          row.style.display = '';
-        } else {
-          row.style.display = 'none';
-        }
+      const f = tab.dataset.filter;
+      document.querySelectorAll('.invoice-card, .invoice-row').forEach(el => {
+        el.style.display = (f === 'all' || el.dataset.status === f) ? '' : 'none';
       });
     });
   });
 
-  // Nav active state
+  // Nav active states
   document.querySelectorAll('.nav-item').forEach(item => {
     item.addEventListener('click', e => {
-      e.preventDefault();
       document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+    });
+  });
+  document.querySelectorAll('.bn-item').forEach(item => {
+    item.addEventListener('click', () => {
+      document.querySelectorAll('.bn-item').forEach(i => i.classList.remove('active'));
       item.classList.add('active');
     });
   });
